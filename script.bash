@@ -10,7 +10,7 @@ fact_id=`echo ${json_fact} | jq -r '.id'`
 # Look for this fact in local db
 local_fact=`sqlite3 local.sqlite3 "SELECT * FROM facts WHERE ID='${fact_id}';"`
 if [ ! -z "${local_fact}" ]; then
-  text=`echo ${local_fact} | cut -d'|' -f3`
+  text=`echo ${local_fact} | cut -d'|' -f3 | sed -r 's/__/\"/g'`
 else
   original_text=`echo ${json_fact} | jq -r '.value'`
 
@@ -19,7 +19,8 @@ else
   text=`echo $ret | jq -r '.translations[0].text'`
 
   # Store translation in local DB
-  sqlite3 local.sqlite3 "INSERT INTO facts VALUES ('${fact_id}', '${original_text}', '${text}');"
+  clean_text=`echo ${text} | sed -r 's/\"/__/g'`
+  sqlite3 local.sqlite3 "INSERT INTO facts VALUES (\"${fact_id}\", \"${original_text}\", \"${clean_text}\");"
 fi
 
 # Return fact
