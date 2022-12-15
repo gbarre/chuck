@@ -20,7 +20,8 @@ else
 
   # Store translation in local DB
   clean_text=`echo ${text} | sed -r 's/\"/__/g'`
-  sqlite3 local.sqlite3 "INSERT INTO facts VALUES (\"${fact_id}\", \"${original_text}\", \"${clean_text}\");"
+  clean_original_text=`echo ${original_text} | sed -r 's/\"/__/g'`
+  sqlite3 local.sqlite3 "INSERT INTO facts VALUES (\"${fact_id}\", \"${clean_original_text}\", \"${clean_text}\");"
 fi
 
 # Return fact
